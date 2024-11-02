@@ -8,17 +8,6 @@ async function getImage(url: string) {
     return response.data;
 }
 
-async function isValidImageUrl(imageUrl: string): Promise<boolean> {
-    try {
-        const response = await axios.head(imageUrl);
-        const contentType = response.headers['content-type'];
-        return contentType && contentType.startsWith('image/');
-    } catch (error) {
-        console.error('Error checking image URL:', error);
-        return false;
-    }
-}
-
 async function cropImage(image: Buffer, imageWidth: number, imageHeight: number, randomX: number, randomY: number) {
 
     const minSize = Math.min(imageWidth, imageHeight);
