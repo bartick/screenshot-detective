@@ -19,4 +19,6 @@ model Challenge {
     randomY Int
     amount Int
     token String
+    completed Boolean @default(false)
+    winner String @default("")
 }
