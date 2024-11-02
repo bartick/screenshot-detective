@@ -1,0 +1,22 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url = env("DATABASE_URL")
+}
+
+model Challenge {
+    id Int @id @default(autoincrement())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    url String
+    answer String
+    imageWidth Int
+    imageHeight Int
+    randomX Int
+    randomY Int
+    amount Int
+    token String
+}
