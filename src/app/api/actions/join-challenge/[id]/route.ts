@@ -50,6 +50,9 @@ export const GET = async (req: Request, { params: { id } }: {
       select: {
         amount: true,
         token: true,
+        completed: true,
+        winner: true,
+        url: true
       },
       where: {
         id: parseInt(id),
@@ -58,6 +61,28 @@ export const GET = async (req: Request, { params: { id } }: {
 
     if (!gameToPay) {
       throw new GenericError("Challenge not found", StatusCodes.NOT_FOUND);
+    }
+
+    if (gameToPay.completed) {
+      const payload: ActionGetResponse = {
+        title: "Challenge Completed",
+        icon: gameToPay.url,
+        type: "action",
+        description: `This challenge has been completed and ${gameToPay?.amount} ${gameToPay?.token} has been won by ${gameToPay?.winner}`,
+        label: "Completed",
+        links: {
+          actions: [
+            {
+              label: 'View Result',
+              href: `${requestUrl.origin}/api/actions/join-challenge/${id}/result`,
+              type: 'message',
+            }
+          ],
+        },
+        disabled: true,
+      }
+
+      return jsonResponse(payload, StatusCodes.OK, headers);
     }
 
     const payload: ActionGetResponse = {
@@ -188,6 +213,16 @@ export const POST = async (req: Request, {params: {id}}: {params: {id: string}})
       });
       return jsonResponse(payload, StatusCodes.OK, headers);
     } 
+
+    prisma.challenge.update({
+      where: {
+        id: parseInt(id),
+      },
+      data: {
+        completed: true,
+        winner: account.toString(),
+      }
+    }).then(() => {});
 
     const payload: ActionPostResponse = await createPostResponse({
       fields: {
